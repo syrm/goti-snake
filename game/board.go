@@ -31,7 +31,7 @@ type Board struct {
 	frames     int32
 	position   CoordinateConverter
 	apple      [2]int32
-	snakeSize  int32
+	cellSize   int32
 	status     Status
 	lastStatus Status
 }
@@ -48,7 +48,8 @@ const (
 func (board *Board) Init() {
 	rand.Seed(time.Now().UnixNano())
 
-	board.snakeSize = (board.size - 2*board.border) / board.grid
+	board.cellSize = (board.size - 2*board.border) / board.grid
+	rl.SetConfigFlags(rl.FlagMsaa4xHint | rl.FlagVsyncHint)
 	rl.InitWindow(board.size, board.size+board.menuSize, "Goti Board")
 	rl.SetTargetFPS(60)
 }
@@ -63,7 +64,7 @@ func (board *Board) Draw() {
 	board.drawMenu()
 	board.drawBackground()
 	board.drawApple()
-	board.snake.Draw(board.snakeSize)
+	board.snake.Draw(board.cellSize)
 
 	board.frames++
 }
@@ -134,16 +135,17 @@ func (board *Board) drawMenu() {
 }
 
 func (board *Board) drawBackground() {
-	rl.DrawRectangle(0, board.menuSize, board.size, board.size, rl.DarkBrown)
+	rl.DrawRectangle(0, board.menuSize, board.size, board.size, rl.NewColor(66, 66, 66, 255))
 	rl.DrawRectangle(board.border, board.menuSize+board.border, board.size-2*board.border, board.size-2*board.border, rl.White)
 }
 
 func (board *Board) drawApple() {
-	rl.DrawCircle(
-		board.position.XToPixel(board.apple[0])+board.size/board.grid/2,
-		board.position.YToPixel(board.apple[1])+board.size/board.grid/2,
-		float32(board.snakeSize)*0.4,
-		rl.Green,
+	rl.DrawRectangle(
+		board.position.XToPixel(board.apple[0]),
+		board.position.YToPixel(board.apple[1]),
+		board.cellSize,
+		board.cellSize,
+		rl.NewColor(192, 70, 67, 255),
 	)
 }
 

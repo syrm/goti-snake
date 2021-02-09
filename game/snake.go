@@ -2,6 +2,7 @@ package game
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"math"
 	"math/rand"
 	"time"
 )
@@ -59,35 +60,35 @@ func (snake *Snake) Init() {
 	snake.head = 0
 	snake.length = 1
 
-	if startX < 4 && startY < 4 {
+	if startX <= int32(math.Floor(float64(snake.grid)*0.33)) && startY <= int32(math.Floor(float64(snake.grid)*0.33)) { // Left Top
 		switch rand.Intn(2) {
 		case 0:
 			snake.direction = Down
 		case 1:
 			snake.direction = Right
 		}
-	} else if startX < 4 && startY > snake.grid-5 {
+	} else if startX <= int32(math.Floor(float64(snake.grid)*0.33)) && startY >= int32(math.Floor(float64(snake.grid)*0.66)) { // Left Bottom
 		switch rand.Intn(2) {
 		case 0:
 			snake.direction = Up
 		case 1:
 			snake.direction = Right
 		}
-	} else if startX > snake.grid-5 && startY < 4 {
+	} else if startX >= int32(math.Floor(float64(snake.grid)*0.66)) && startY <= int32(math.Floor(float64(snake.grid)*0.33)) { // Right Top
 		switch rand.Intn(2) {
 		case 0:
 			snake.direction = Down
 		case 1:
 			snake.direction = Left
 		}
-	} else if startX > snake.grid-5 && startY > snake.grid-5 {
+	} else if startX >= int32(math.Floor(float64(snake.grid)*0.66)) && startY >= int32(math.Floor(float64(snake.grid)*0.66)) { // Right Bottom
 		switch rand.Intn(2) {
 		case 0:
 			snake.direction = Up
 		case 1:
 			snake.direction = Left
 		}
-	} else if startX < 4 {
+	} else if startX <= int32(math.Floor(float64(snake.grid)*0.33)) { // Left
 		switch rand.Intn(3) {
 		case 0:
 			snake.direction = Down
@@ -96,8 +97,8 @@ func (snake *Snake) Init() {
 		case 2:
 			snake.direction = Up
 		}
-	} else if startY < 4 {
-		switch rand.Intn(3) {
+	} else if startY <= int32(math.Floor(float64(snake.grid)*0.33)) { // Top
+		switch rand.Intn(3) { // Left
 		case 0:
 			snake.direction = Down
 		case 1:
@@ -105,7 +106,7 @@ func (snake *Snake) Init() {
 		case 2:
 			snake.direction = Left
 		}
-	} else if startX > snake.grid-5 {
+	} else if startX >= int32(math.Floor(float64(snake.grid)*0.66)) { // Right
 		switch rand.Intn(3) {
 		case 0:
 			snake.direction = Up
@@ -114,7 +115,7 @@ func (snake *Snake) Init() {
 		case 2:
 			snake.direction = Down
 		}
-	} else if startY > snake.grid-5 {
+	} else if startY >= int32(math.Floor(float64(snake.grid)*0.66)) { // Bottom
 		switch rand.Intn(3) {
 		case 0:
 			snake.direction = Up
@@ -248,126 +249,58 @@ func (snake *Snake) GoingToDirection(direction Direction) bool {
 }
 
 func (snake *Snake) Draw(size int32) {
-	previousCoord := newPosition(0, 0)
 	for index := snake.head; index >= snake.head-(snake.length-1); index-- {
 		coord := snake.getBody(index)
 
-		if index != snake.head && index == snake.head-(snake.length-1) {
-			snake.drawTail(size, previousCoord, coord)
-		} else {
-			rl.DrawRectangle(
-				snake.coordinateConverter.XToPixel(coord.x),
-				snake.coordinateConverter.YToPixel(coord.y),
-				size,
-				size,
-				rl.DarkGreen,
-			)
-		}
+		rl.DrawRectangle(
+			snake.coordinateConverter.XToPixel(coord.x),
+			snake.coordinateConverter.YToPixel(coord.y),
+			size,
+			size,
+			rl.NewColor(157, 196, 98, 255),
+		)
 
 		if index == snake.head {
-			for _, eye := range snake.xyToLeftEye(size, coord.x, coord.y, snake.direction) {
-				rl.DrawCircle(eye[0], eye[1], float32(size/8), rl.DarkPurple)
+			switch snake.direction {
+			case Up:
+				rl.DrawRectangleGradientV(
+					snake.coordinateConverter.XToPixel(coord.x),
+					snake.coordinateConverter.YToPixel(coord.y),
+					size,
+					size,
+					rl.NewColor(47, 78, 0, 255),
+					rl.NewColor(157, 196, 98, 255),
+				)
+			case Down:
+				rl.DrawRectangleGradientV(
+					snake.coordinateConverter.XToPixel(coord.x),
+					snake.coordinateConverter.YToPixel(coord.y),
+					size,
+					size,
+					rl.NewColor(157, 196, 98, 255),
+					rl.NewColor(47, 78, 0, 255),
+				)
+			case Left:
+				rl.DrawRectangleGradientH(
+					snake.coordinateConverter.XToPixel(coord.x),
+					snake.coordinateConverter.YToPixel(coord.y),
+					size,
+					size,
+					rl.NewColor(47, 78, 0, 255),
+					rl.NewColor(157, 196, 98, 255),
+				)
+			case Right:
+				rl.DrawRectangleGradientH(
+					snake.coordinateConverter.XToPixel(coord.x),
+					snake.coordinateConverter.YToPixel(coord.y),
+					size,
+					size,
+					rl.NewColor(157, 196, 98, 255),
+					rl.NewColor(47, 78, 0, 255),
+				)
 			}
 		}
-
-		previousCoord = newPosition(
-			coord.x,
-			coord.y,
-		)
 	}
-}
-
-func (snake *Snake) drawTail(size int32, previousBodyCoord Position, coord Position) {
-	if previousBodyCoord.x < coord.x {
-		rl.DrawCircle(
-			snake.coordinateConverter.XToPixel(coord.x),
-			snake.coordinateConverter.YToPixel(coord.y)+size/2,
-			float32(size/2),
-			rl.DarkGreen,
-		)
-		return
-	}
-
-	if previousBodyCoord.x > coord.x {
-		rl.DrawCircle(
-			snake.coordinateConverter.XToPixel(coord.x)+size,
-			snake.coordinateConverter.YToPixel(coord.y)+size/2,
-			float32(size/2),
-			rl.DarkGreen,
-		)
-		return
-	}
-
-	if previousBodyCoord.y > coord.y {
-		rl.DrawCircle(
-			snake.coordinateConverter.XToPixel(coord.x)+size/2,
-			snake.coordinateConverter.YToPixel(coord.y)+size,
-			float32(size/2),
-			rl.DarkGreen,
-		)
-		return
-	}
-
-	if previousBodyCoord.y < coord.y {
-		rl.DrawCircle(
-			snake.coordinateConverter.XToPixel(coord.x)+size/2,
-			snake.coordinateConverter.YToPixel(coord.y),
-			float32(size/2),
-			rl.DarkGreen,
-		)
-		return
-	}
-}
-
-func (snake *Snake) xyToLeftEye(size int32, x int32, y int32, direction Direction) [2][2]int32 {
-	switch direction {
-	case Left:
-		return [2][2]int32{
-			{
-				snake.coordinateConverter.XToPixel(x) + size/8,
-				snake.coordinateConverter.YToPixel(y) + size - size/8,
-			},
-			{
-				snake.coordinateConverter.XToPixel(x) + size/8,
-				snake.coordinateConverter.YToPixel(y) + size/8,
-			},
-		}
-	case Right:
-		return [2][2]int32{
-			{
-				snake.coordinateConverter.XToPixel(x) + size - size/8,
-				snake.coordinateConverter.YToPixel(y) + size - size/8,
-			},
-			{
-				snake.coordinateConverter.XToPixel(x) + size - size/8,
-				snake.coordinateConverter.YToPixel(y) - size/8 + 2*size/8,
-			},
-		}
-	case Up:
-		return [2][2]int32{
-			{
-				snake.coordinateConverter.XToPixel(x) + size - size/8,
-				snake.coordinateConverter.YToPixel(y) + size/8,
-			},
-			{
-				snake.coordinateConverter.XToPixel(x) + size/8,
-				snake.coordinateConverter.YToPixel(y) + size/8,
-			},
-		}
-	case Down:
-		return [2][2]int32{
-			{
-				snake.coordinateConverter.XToPixel(x) + size - size/8,
-				snake.coordinateConverter.YToPixel(y) + size - size/8,
-			},
-			{
-				snake.coordinateConverter.XToPixel(x) - size/8 + 2*size/8,
-				snake.coordinateConverter.YToPixel(y) + size - size/8,
-			},
-		}
-	}
-
-	return [2][2]int32{}
 }
 
 func (snake *Snake) setBody(index int, position Position) {

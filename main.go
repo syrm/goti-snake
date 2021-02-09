@@ -8,11 +8,13 @@ import (
 const (
 	gameSize  = 600
 	border    = 20
-	gridSize  = 4
+	gridSize  = 20
 	snakeSize = (gameSize - 2*border) / gridSize
 )
 
 func main() {
+	rl.SetTraceLog(rl.LogError)
+
 	if gridSize < 3 {
 		panic("GridSize should be at less 10")
 	}
