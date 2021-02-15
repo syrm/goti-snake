@@ -265,261 +265,42 @@ func (snake *Snake) Draw(size int32) {
 		if index < snake.head {
 			coordNext := snake.getBody(index + 1)
 
-			// haut gauche
-			// bas gauche
-			// bas droite
-			// haut droite
-
-			if coordNext.x > coord.x {
-				bodyColor[0] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[1] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[2] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
-
-				bodyColor[3] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
+			if coordNext.x > coord.x { // left
+				bodyColor = snake.generateColor(degradedStep, index, []int{0, 1, 2, 3})
 			}
 
-			if coordNext.y > coord.y {
-				bodyColor[0] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[3] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[1] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
-
-				bodyColor[2] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
+			if coordNext.y > coord.y { // bottom
+				bodyColor = snake.generateColor(degradedStep, index, []int{0, 3, 1, 2})
 			}
 
-			if coordNext.x < coord.x {
-				bodyColor[2] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[3] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[0] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
-
-				bodyColor[1] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
+			if coordNext.x < coord.x { // right
+				bodyColor = snake.generateColor(degradedStep, index, []int{2, 3, 0, 1})
 			}
 
-			if coordNext.y < coord.y {
-				bodyColor[1] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[2] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index+1)),
-					uint8(78+degradedStep*(snake.head-index+1)),
-					uint8(0+degradedStep*(snake.head-index+1)),
-					255,
-				)
-
-				bodyColor[0] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
-
-				bodyColor[3] = rl.NewColor(
-					uint8(47+degradedStep*(snake.head-index)),
-					uint8(78+degradedStep*(snake.head-index)),
-					uint8(0+degradedStep*(snake.head-index)),
-					255,
-				)
+			if coordNext.y < coord.y { // top
+				bodyColor = snake.generateColor(degradedStep, index, []int{1, 2, 0, 3})
 			}
 		}
 
 		for appleIndex, appleEated := range snake.applesEated {
 			if coord.x == appleEated.x && coord.y == appleEated.y {
 				coordNext := snake.getBody(index + 1)
+				degradedStepAppleEated := int(140 / math.Max(1, float64(snake.length/2)))
 
-				degradedStep := int(140 / math.Max(1, float64(snake.length/2)))
-
-				// haut gauche
-				// bas gauche
-				// bas droite
-				// haut droite
-
-				if coordNext.x > coord.x {
-					bodyColor[0] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[1] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[2] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
-
-					bodyColor[3] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
+				if coordNext.x > coord.x { // left
+					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{0, 1, 2, 3})
 				}
 
-				if coordNext.y > coord.y {
-					bodyColor[0] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[3] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[1] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
-
-					bodyColor[2] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
+				if coordNext.y > coord.y { // bottom
+					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{0, 3, 1, 2})
 				}
 
-				if coordNext.x < coord.x {
-					bodyColor[2] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[3] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[0] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
-
-					bodyColor[1] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
+				if coordNext.x < coord.x { // right
+					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{2, 3, 0, 1})
 				}
 
-				if coordNext.y < coord.y {
-					bodyColor[1] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[2] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
-						255,
-					)
-
-					bodyColor[0] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
-
-					bodyColor[3] = rl.NewColor(
-						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
-						255,
-					)
+				if coordNext.y < coord.y { // top
+					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{1, 2, 0, 3})
 				}
 
 				applesToDigest[appleIndex] = true
@@ -548,13 +329,8 @@ func (snake *Snake) Draw(size int32) {
 				255,
 			)
 
-			// 1 : 140 ds 140
-			// 2 :  70 ds 71
-			// 3 :  46
+			colors := make([]rl.Color, 4)
 
-			colors := []rl.Color{}
-
-			// DrawRectangleGradientV
 			switch snake.direction {
 			case Up:
 				colors = []rl.Color{
@@ -563,52 +339,6 @@ func (snake *Snake) Draw(size int32) {
 					color,
 					rl.NewColor(47, 78, 0, 255),
 				}
-
-				/*
-					if snake.length > 1 {
-						coordNext := snake.getBody(index - 1)
-
-						if coordNext.x > coord.x {
-							println("a droite")
-							colors[3] = rl.NewColor(157, 196, 98, 255)
-						}
-
-						if coordNext.y > coord.y {
-							println("en bas")
-						}
-
-						if coordNext.x < coord.x {
-							println("a gauche")
-							colors[0] = rl.NewColor(157, 196, 98, 255)
-						}
-
-						if coordNext.y < coord.y {
-							println("en haut")
-						}
-					}
-				*/
-
-				// haut gauche
-				// bas gauche
-				// bas droite
-				// haut droite
-
-				/*
-						rl.NewColor(47, 78, 0, 255),
-						rl.NewColor(157, 196, 98, 255),
-						rl.NewColor(157, 196, 98, 255),
-						rl.NewColor(255, 196, 98, 255),
-					)
-					/*
-									rl.DrawRectangleGradientV(
-							snake.coordinateConverter.XToPixel(coord.x),
-							snake.coordinateConverter.YToPixel(coord.y),
-							size,
-							size,
-							rl.NewColor(47, 78, 0, 255),
-							rl.NewColor(157, 196, 98, 255),
-						)
-				*/
 			case Down:
 				colors = []rl.Color{
 					color,
@@ -660,4 +390,38 @@ func (snake *Snake) setBody(index int, position Position) {
 
 func (snake *Snake) getBody(index int) Position {
 	return snake.body[index%len(snake.body)]
+}
+
+func (snake *Snake) generateColor(degradedStep int, index int, colorOrders []int) []rl.Color {
+	color := make([]rl.Color, 4)
+
+	color[colorOrders[0]] = rl.NewColor(
+		uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		255,
+	)
+
+	color[colorOrders[1]] = rl.NewColor(
+		uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+		255,
+	)
+
+	color[colorOrders[2]] = rl.NewColor(
+		uint8(47+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		uint8(78+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		uint8(0+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		255,
+	)
+
+	color[colorOrders[3]] = rl.NewColor(
+		uint8(47+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		uint8(78+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		uint8(0+math.Min(140, float64(degradedStep*(snake.head-index)))),
+		255,
+	)
+
+	return color
 }
