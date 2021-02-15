@@ -30,10 +30,15 @@ type Board struct {
 	border     int32
 	frames     int32
 	position   CoordinateConverter
-	apple      [2]int32
+	apple      Apple
 	cellSize   int32
 	status     Status
 	lastStatus Status
+}
+
+type Apple struct {
+	x int32
+	y int32
 }
 
 type Status int
@@ -71,8 +76,8 @@ func (board *Board) Draw() {
 
 func (board *Board) CheckApple() {
 	if board.snake.AppleEatable(board.apple) {
+		board.snake.AppleEated(board.apple)
 		board.SpawnApple()
-		board.snake.AppleEated()
 	}
 }
 
@@ -98,8 +103,6 @@ func (board *Board) KeyListener() {
 			board.status = GameOver
 			return
 		}
-
-		board.frames = 0
 	}
 
 	if rl.IsKeyPressed(rl.KeyLeft) {
@@ -107,8 +110,6 @@ func (board *Board) KeyListener() {
 			board.status = GameOver
 			return
 		}
-
-		board.frames = 0
 	}
 
 	if rl.IsKeyPressed(rl.KeyUp) {
@@ -116,8 +117,6 @@ func (board *Board) KeyListener() {
 			board.status = GameOver
 			return
 		}
-
-		board.frames = 0
 	}
 
 	if rl.IsKeyPressed(rl.KeyDown) {
@@ -125,8 +124,6 @@ func (board *Board) KeyListener() {
 			board.status = GameOver
 			return
 		}
-
-		board.frames = 0
 	}
 }
 
@@ -141,8 +138,8 @@ func (board *Board) drawBackground() {
 
 func (board *Board) drawApple() {
 	rl.DrawRectangle(
-		board.position.XToPixel(board.apple[0]),
-		board.position.YToPixel(board.apple[1]),
+		board.position.XToPixel(board.apple.x),
+		board.position.YToPixel(board.apple.y),
 		board.cellSize,
 		board.cellSize,
 		rl.NewColor(192, 70, 67, 255),
@@ -157,9 +154,9 @@ func (board *Board) SpawnApple() {
 	}
 
 	freeCell := freeCells[rand.Intn(len(freeCells))]
-	board.apple = [2]int32{
-		freeCell[0],
-		freeCell[1],
+	board.apple = Apple{
+		x: freeCell[0],
+		y: freeCell[1],
 	}
 }
 

@@ -27,7 +27,7 @@ func main() {
 	snake := gamePkg.NewSnake(gridSize, position)
 	snake.Init()
 
-	game := gamePkg.NewBoard(snake, gameSize, gridSize, 20, 0.3, position)
+	game := gamePkg.NewBoard(snake, gameSize, gridSize, 20, 0.2, position)
 	game.Init()
 	game.SpawnApple()
 

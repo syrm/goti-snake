@@ -48,6 +48,7 @@ type Snake struct {
 	direction           Direction
 	coordinateConverter CoordinateConverter
 	needToGrow          bool
+	applesEated         []Apple
 }
 
 func (snake *Snake) Init() {
@@ -151,15 +152,16 @@ func (snake *Snake) GetFreeCells() [][]int32 {
 	return freeCells
 }
 
-func (snake *Snake) AppleEatable(apple [2]int32) bool {
-	if apple[0] == snake.getBody(snake.head).x && apple[1] == snake.getBody(snake.head).y {
+func (snake *Snake) AppleEatable(apple Apple) bool {
+	if apple.x == snake.getBody(snake.head).x && apple.y == snake.getBody(snake.head).y {
 		return true
 	}
 
 	return false
 }
 
-func (snake *Snake) AppleEated() {
+func (snake *Snake) AppleEated(apple Apple) {
+	snake.applesEated = append(snake.applesEated, apple)
 	snake.needToGrow = true
 }
 
@@ -243,62 +245,411 @@ func (snake *Snake) GoingToDirection(direction Direction) bool {
 	}
 
 	snake.direction = direction
-	snake.Move()
 
 	return true
 }
 
 func (snake *Snake) Draw(size int32) {
+	applesToDigest := make([]bool, len(snake.applesEated))
+	degradedStep := 140 / snake.length
+
 	for index := snake.head; index >= snake.head-(snake.length-1); index-- {
 		coord := snake.getBody(index)
-
-		rl.DrawRectangle(
-			snake.coordinateConverter.XToPixel(coord.x),
-			snake.coordinateConverter.YToPixel(coord.y),
-			size,
-			size,
+		bodyColor := []rl.Color{
 			rl.NewColor(157, 196, 98, 255),
+			rl.NewColor(157, 196, 98, 255),
+			rl.NewColor(157, 196, 98, 255),
+			rl.NewColor(157, 196, 98, 255),
+		}
+
+		if index < snake.head {
+			coordNext := snake.getBody(index + 1)
+
+			// haut gauche
+			// bas gauche
+			// bas droite
+			// haut droite
+
+			if coordNext.x > coord.x {
+				bodyColor[0] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[1] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[2] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+
+				bodyColor[3] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+			}
+
+			if coordNext.y > coord.y {
+				bodyColor[0] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[3] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[1] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+
+				bodyColor[2] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+			}
+
+			if coordNext.x < coord.x {
+				bodyColor[2] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[3] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[0] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+
+				bodyColor[1] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+			}
+
+			if coordNext.y < coord.y {
+				bodyColor[1] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[2] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index+1)),
+					uint8(78+degradedStep*(snake.head-index+1)),
+					uint8(0+degradedStep*(snake.head-index+1)),
+					255,
+				)
+
+				bodyColor[0] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+
+				bodyColor[3] = rl.NewColor(
+					uint8(47+degradedStep*(snake.head-index)),
+					uint8(78+degradedStep*(snake.head-index)),
+					uint8(0+degradedStep*(snake.head-index)),
+					255,
+				)
+			}
+		}
+
+		for appleIndex, appleEated := range snake.applesEated {
+			if coord.x == appleEated.x && coord.y == appleEated.y {
+				coordNext := snake.getBody(index + 1)
+
+				degradedStep := int(140 / math.Max(1, float64(snake.length/2)))
+
+				// haut gauche
+				// bas gauche
+				// bas droite
+				// haut droite
+
+				if coordNext.x > coord.x {
+					bodyColor[0] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[1] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[2] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+
+					bodyColor[3] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+				}
+
+				if coordNext.y > coord.y {
+					bodyColor[0] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[3] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[1] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+
+					bodyColor[2] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+				}
+
+				if coordNext.x < coord.x {
+					bodyColor[2] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[3] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[0] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+
+					bodyColor[1] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+				}
+
+				if coordNext.y < coord.y {
+					bodyColor[1] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[2] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+1)))),
+						255,
+					)
+
+					bodyColor[0] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+
+					bodyColor[3] = rl.NewColor(
+						uint8(47+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(78+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						uint8(0+math.Min(140, float64(degradedStep*(snake.head-index+0)))),
+						255,
+					)
+				}
+
+				applesToDigest[appleIndex] = true
+				break
+			}
+		}
+
+		rl.DrawRectangleGradientEx(
+			rl.NewRectangle(
+				float32(snake.coordinateConverter.XToPixel(coord.x)),
+				float32(snake.coordinateConverter.YToPixel(coord.y)),
+				float32(size),
+				float32(size),
+			),
+			bodyColor[0],
+			bodyColor[1],
+			bodyColor[2],
+			bodyColor[3],
 		)
 
 		if index == snake.head {
+			color := rl.NewColor(
+				uint8(47+degradedStep),
+				uint8(78+degradedStep),
+				uint8(0+degradedStep),
+				255,
+			)
+
+			// 1 : 140 ds 140
+			// 2 :  70 ds 71
+			// 3 :  46
+
+			colors := []rl.Color{}
+
+			// DrawRectangleGradientV
 			switch snake.direction {
 			case Up:
-				rl.DrawRectangleGradientV(
-					snake.coordinateConverter.XToPixel(coord.x),
-					snake.coordinateConverter.YToPixel(coord.y),
-					size,
-					size,
+				colors = []rl.Color{
 					rl.NewColor(47, 78, 0, 255),
-					rl.NewColor(157, 196, 98, 255),
-				)
+					color,
+					color,
+					rl.NewColor(47, 78, 0, 255),
+				}
+
+				/*
+					if snake.length > 1 {
+						coordNext := snake.getBody(index - 1)
+
+						if coordNext.x > coord.x {
+							println("a droite")
+							colors[3] = rl.NewColor(157, 196, 98, 255)
+						}
+
+						if coordNext.y > coord.y {
+							println("en bas")
+						}
+
+						if coordNext.x < coord.x {
+							println("a gauche")
+							colors[0] = rl.NewColor(157, 196, 98, 255)
+						}
+
+						if coordNext.y < coord.y {
+							println("en haut")
+						}
+					}
+				*/
+
+				// haut gauche
+				// bas gauche
+				// bas droite
+				// haut droite
+
+				/*
+						rl.NewColor(47, 78, 0, 255),
+						rl.NewColor(157, 196, 98, 255),
+						rl.NewColor(157, 196, 98, 255),
+						rl.NewColor(255, 196, 98, 255),
+					)
+					/*
+									rl.DrawRectangleGradientV(
+							snake.coordinateConverter.XToPixel(coord.x),
+							snake.coordinateConverter.YToPixel(coord.y),
+							size,
+							size,
+							rl.NewColor(47, 78, 0, 255),
+							rl.NewColor(157, 196, 98, 255),
+						)
+				*/
 			case Down:
-				rl.DrawRectangleGradientV(
-					snake.coordinateConverter.XToPixel(coord.x),
-					snake.coordinateConverter.YToPixel(coord.y),
-					size,
-					size,
-					rl.NewColor(157, 196, 98, 255),
+				colors = []rl.Color{
+					color,
 					rl.NewColor(47, 78, 0, 255),
-				)
+					rl.NewColor(47, 78, 0, 255),
+					color,
+				}
 			case Left:
-				rl.DrawRectangleGradientH(
-					snake.coordinateConverter.XToPixel(coord.x),
-					snake.coordinateConverter.YToPixel(coord.y),
-					size,
-					size,
+				colors = []rl.Color{
 					rl.NewColor(47, 78, 0, 255),
-					rl.NewColor(157, 196, 98, 255),
-				)
+					rl.NewColor(47, 78, 0, 255),
+					color,
+					color,
+				}
 			case Right:
-				rl.DrawRectangleGradientH(
-					snake.coordinateConverter.XToPixel(coord.x),
-					snake.coordinateConverter.YToPixel(coord.y),
-					size,
-					size,
-					rl.NewColor(157, 196, 98, 255),
+				colors = []rl.Color{
+					color,
+					color,
 					rl.NewColor(47, 78, 0, 255),
-				)
+					rl.NewColor(47, 78, 0, 255),
+				}
 			}
+
+			rl.DrawRectangleGradientEx(
+				rl.NewRectangle(
+					float32(snake.coordinateConverter.XToPixel(coord.x)),
+					float32(snake.coordinateConverter.YToPixel(coord.y)),
+					float32(size),
+					float32(size),
+				),
+				colors[0],
+				colors[1],
+				colors[2],
+				colors[3],
+			)
+		}
+	}
+
+	for index := range snake.applesEated {
+		if applesToDigest[index] == false {
+			snake.applesEated = append(snake.applesEated[:index], snake.applesEated[index+1:]...)
 		}
 	}
 }
