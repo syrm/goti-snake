@@ -285,22 +285,22 @@ func (snake *Snake) Draw(size int32) {
 		for appleIndex, appleEated := range snake.applesEated {
 			if coord.x == appleEated.x && coord.y == appleEated.y {
 				coordNext := snake.getBody(index + 1)
-				degradedStepAppleEated := int(140 / math.Max(1, float64(snake.length/2)))
+				indexShifted := int(math.Max(float64(snake.head-(snake.length-1)), float64(index-snake.length*1/3)))
 
 				if coordNext.x > coord.x { // left
-					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{0, 1, 2, 3})
+					bodyColor = snake.generateColor(degradedStep, indexShifted, []int{0, 1, 2, 3})
 				}
 
 				if coordNext.y > coord.y { // bottom
-					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{0, 3, 1, 2})
+					bodyColor = snake.generateColor(degradedStep, indexShifted, []int{0, 3, 1, 2})
 				}
 
 				if coordNext.x < coord.x { // right
-					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{2, 3, 0, 1})
+					bodyColor = snake.generateColor(degradedStep, indexShifted, []int{2, 3, 0, 1})
 				}
 
 				if coordNext.y < coord.y { // top
-					bodyColor = snake.generateColor(degradedStepAppleEated, index, []int{1, 2, 0, 3})
+					bodyColor = snake.generateColor(degradedStep, indexShifted, []int{1, 2, 0, 3})
 				}
 
 				applesToDigest[appleIndex] = true

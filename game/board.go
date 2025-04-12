@@ -1,9 +1,10 @@
 package game
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"math/rand"
 	"time"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func NewBoard(snake *Snake, size int32, grid int32, border int32, speed float32, position CoordinateConverter) *Board {
@@ -54,9 +55,9 @@ func (board *Board) Init() {
 	rand.Seed(time.Now().UnixNano())
 
 	board.cellSize = (board.size - 2*board.border) / board.grid
-	rl.SetConfigFlags(rl.FlagMsaa4xHint | rl.FlagVsyncHint)
+	//rl.SetConfigFlags(rl.FlagMsaa4xHint | rl.FlagVsyncHint)
 	rl.InitWindow(board.size, board.size+board.menuSize, "Goti Board")
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(120)
 }
 
 func (board *Board) Reset() {
