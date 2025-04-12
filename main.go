@@ -55,7 +55,7 @@ func main() {
 				continue
 			}
 
-			if gameStatus != gamePkg.Continue {
+			if gameStatus != gamePkg.Continue && gameStatus != gamePkg.Pause {
 				rl.EndDrawing()
 				break
 			}

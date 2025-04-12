@@ -49,15 +49,16 @@ const (
 	GameOver Status = 2
 	Continue Status = 3
 	NewGame  Status = 4
+	Pause    Status = 5
 )
 
 func (board *Board) Init() {
 	rand.Seed(time.Now().UnixNano())
 
 	board.cellSize = (board.size - 2*board.border) / board.grid
-	//rl.SetConfigFlags(rl.FlagMsaa4xHint | rl.FlagVsyncHint)
+	rl.SetConfigFlags(rl.FlagMsaa4xHint)
 	rl.InitWindow(board.size, board.size+board.menuSize, "Goti Board")
-	rl.SetTargetFPS(120)
+	rl.SetTargetFPS(240)
 }
 
 func (board *Board) Reset() {
@@ -96,6 +97,16 @@ func (board *Board) KeyListener() {
 	}
 
 	if board.status == NewGame {
+		return
+	}
+
+	if rl.IsKeyPressed(rl.KeySpace) {
+		if board.status == Pause {
+			board.status = Continue
+			return
+		}
+
+		board.status = Pause
 		return
 	}
 
@@ -193,6 +204,12 @@ func (board *Board) Loop() Status {
 		return board.status
 	}
 
+	if board.status == Pause {
+		board.DisplayPause()
+
+		return board.status
+	}
+
 	if board.status != Continue {
 		return board.status
 	}
@@ -231,5 +248,9 @@ func (board *Board) DisplayVictory() {
 func (board *Board) DisplayGameOver() {
 	board.lastStatus = GameOver
 	board.status = NewGame
-	rl.DrawText("Tu as perdu !", board.size/2-150, 2, 40, rl.Black)
+	rl.DrawText("You lose !", board.size/2-150, 2, 40, rl.Black)
+}
+
+func (board *Board) DisplayPause() {
+	rl.DrawText("Pause", board.size/2-150, 2, 40, rl.Black)
 }
